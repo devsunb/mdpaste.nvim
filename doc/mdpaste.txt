@@ -1,0 +1,125 @@
+*mdpaste.txt*	Intelligent clipboard pasting for Neovim
+
+CONTENTS					*mdpaste-contents*
+
+1. Introduction					|mdpaste-introduction|
+2. Requirements					|mdpaste-requirements|
+3. Installation					|mdpaste-installation|
+4. Configuration				|mdpaste-configuration|
+5. Usage					|mdpaste-usage|
+6. Commands					|mdpaste-commands|
+7. Functions					|mdpaste-functions|
+8. File Types					|mdpaste-file-types|
+9. Examples					|mdpaste-examples|
+
+==============================================================================
+1. INTRODUCTION					*mdpaste-introduction*
+
+mdpaste.nvim is a Neovim plugin that intelligently processes clipboard
+content and inserts it as properly formatted markdown. It handles three types
+of clipboard content:
+
+- Text: Inserted as-is
+- Images: Saved to disk and inserted as markdown embeds
+- Files: Copied to organized directory structure and inserted as markdown
+  links or embeds based on file type
+
+==============================================================================
+2. REQUIREMENTS					*mdpaste-requirements*
+
+- macOS (uses pbpaste, pngpaste, osascript)
+- pngpaste: Install with `brew install pngpaste`
+
+==============================================================================
+3. INSTALLATION					*mdpaste-installation*
+
+Using lazy.nvim: >
+	{
+	  'devsunb/mdpaste.nvim',
+	  ft = 'markdown',
+	  cmd = { 'MDPaste' },
+	  opts = { base_path = '~/Documents/mdpaste' },
+	}
+<
+
+==============================================================================
+4. CONFIGURATION				*mdpaste-configuration*
+
+Setup function: >
+	require('mdpaste').setup({
+	  -- File storage base path
+	  base_path = vim.fn.expand("~/Documents/mdpaste"),
+
+	  -- Image format for saved images
+	  image_format = "png",
+
+	  -- Date format for file naming
+	  date_format = "%Y-%m-%d-%H%M%S",
+
+	  -- Enable debug messages
+	  debug = false,
+	})
+<
+
+==============================================================================
+5. USAGE					*mdpaste-usage*
+
+1. Copy content to clipboard (text, image, or file)
+2. Position cursor where you want to insert content
+3. Run |:MDPaste| command or use configured keymap
+
+Manual keymap setup: >
+	vim.keymap.set('n', '<Leader>p', ':MDPaste<CR>', { desc = 'MDPaste' })
+	vim.keymap.set('i', '<C-p>', '<Esc>:MDPaste<CR>a', { desc = 'MDPaste' })
+<
+
+==============================================================================
+6. COMMANDS					*mdpaste-commands*
+
+:MDPaste					*:MDPaste*
+	Process clipboard content and insert formatted markdown at cursor
+	position.
+
+==============================================================================
+7. FUNCTIONS					*mdpaste-functions*
+
+mdpaste.setup({config})				*mdpaste.setup()*
+	Setup the plugin with given configuration.
+
+mdpaste.paste()					*mdpaste.paste()*
+	Process clipboard and insert content at cursor.
+
+==============================================================================
+8. FILE TYPES					*mdpaste-file-types*
+
+Embeddable files (use ![[]] format):
+- Images: .jpg, .jpeg, .png, .gif, .bmp, .webp, .svg, .tiff, .tif
+- Videos: .mp4, .avi, .mov, .mkv, .webm, .flv, .wmv, .m4v  
+- PDFs: .pdf
+
+Regular files (use []() format):
+- All other file types
+
+==============================================================================
+9. EXAMPLES					*mdpaste-examples*
+
+Text clipboard: >
+	Hello, World!
+<
+
+Image clipboard: >
+	![[./2024/08/2024-08-19-143052.png]]
+<
+
+File clipboard (embeddable): >
+	![[./2024/08/document.pdf]]
+	![[./2024/08/video.mp4]]
+<
+
+File clipboard (regular): >
+	[document.txt](./2024/08/document.txt)
+	[data.json](./2024/08/data.json)
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
