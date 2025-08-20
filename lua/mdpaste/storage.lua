@@ -44,33 +44,26 @@ function M.get_full_path(base_path, relative_path)
 	return vim.fs.normalize(base_path .. "/" .. relative_path)
 end
 
-function M.get_relative_path(base_path, full_path)
-	-- Get current file path
-	local current_file = vim.fn.expand("%:p")
-	local current_dir = vim.fn.fnamemodify(current_file, ":h")
+function M.get_relative_path(from, to)
+	local min_len = math.min(to:len(), from:len())
+	local mismatch = 0
 
-	-- Calculate relative path from current file's directory to the target file
-	local full_normalized = vim.fs.normalize(full_path)
-	local current_dir_normalized = vim.fs.normalize(current_dir)
-
-	-- Use vim's fnamemodify to get relative path from current directory
-	local rel_path = vim.fn.fnamemodify(full_normalized, ":~:.")
-
-	-- If we're not in the right directory context, manually calculate
-	if vim.fn.getcwd() ~= current_dir_normalized then
-		-- Change to current file's directory temporarily to get proper relative path
-		local old_cwd = vim.fn.getcwd()
-		vim.cmd("cd " .. vim.fn.fnameescape(current_dir_normalized))
-		rel_path = vim.fn.fnamemodify(full_normalized, ":.")
-		vim.cmd("cd " .. vim.fn.fnameescape(old_cwd))
+	for i = 1, min_len do
+		if to:sub(i, i) ~= from:sub(i, i) then
+			mismatch = i
+			break
+		end
 	end
 
-	-- Ensure it starts with ./
-	if not vim.startswith(rel_path, "./") and not vim.startswith(rel_path, "../") then
-		rel_path = "./" .. rel_path
+	local to_diff = to:sub(mismatch)
+	local from_diff = from:sub(mismatch)
+
+	local rel_path = ""
+	for _ in from_diff:gmatch("/") do
+		rel_path = rel_path .. "../"
 	end
 
-	return rel_path
+	return rel_path .. to_diff
 end
 
 function M.copy_file(src, dst)

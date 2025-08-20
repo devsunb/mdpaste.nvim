@@ -131,7 +131,8 @@ function M.process_image(config)
 	end
 
 	-- Generate relative path for markdown
-	local rel_path = storage.get_relative_path(config.base_path, full_path)
+	local current_file = vim.fn.expand("%:p")
+	local rel_path = storage.get_relative_path(current_file, full_path)
 	return formatter.format_image(rel_path), nil
 end
 
@@ -161,7 +162,8 @@ function M.process_files(config, file_paths)
 		end
 
 		-- Generate relative path for markdown
-		local rel_path = storage.get_relative_path(config.base_path, dst_path)
+		local current_file = vim.fn.expand("%:p")
+		local rel_path = storage.get_relative_path(current_file, dst_path)
 		table.insert(saved_paths, rel_path)
 	end
 
